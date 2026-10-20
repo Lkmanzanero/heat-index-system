@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Weather in Tanauan, Batangas</title>
+<style>
+:root{--bg:#f6f4ef;--card:#fff;--tx:#1d2330;--mu:#667085;--bd:#e4e0d6;--ac:#e8590c;
+--c1:#2f9e44;--c2:#f59f00;--c3:#e8590c;--c4:#c92a2a;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#14171d;--card:#1e222b;--tx:#eef0f4;--mu:#9aa3b2;--bd:#2f3541;--ac:#ff8a3d;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:860px;margin:0 auto;padding:20px 16px 40px}
+h1{margin:0;font-size:1.5rem}
+.sub{color:var(--mu);font-size:.9rem;margin:2px 0 16px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:16px;margin-bottom:14px}
+.card h2{margin:0 0 10px;font-size:1rem}
+.hero{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between}
+.big{font-size:3.4rem;font-weight:700;line-height:1}
+.badge{display:inline-block;padding:3px 10px;border-radius:99px;color:#fff;font-weight:600;font-size:.85rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-top:12px}
+.stat{border:1px solid var(--bd);border-radius:10px;padding:10px}
+.stat b{display:block;font-size:1.25rem}
+.stat span{color:var(--mu);font-size:.8rem}
+.row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+input[type=range]{flex:1;min-width:160px;accent-color:var(--ac)}
+.scroll{overflow-x:auto;padding-bottom:6px}
+.hours{display:flex;gap:6px;min-width:max-content;align-items:flex-end;height:200px}
+.h{width:44px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;font-size:.72rem;color:var(--mu);height:100%}
+.bar{width:26px;border-radius:6px 6px 0 0;margin:3px 0}
+.h b{color:var(--tx);font-size:.78rem}
+table{width:100%;border-collapse:collapse;font-size:.92rem}
+th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--bd);white-space:nowrap}
+th{color:var(--mu);font-weight:500;font-size:.8rem}
+.note{color:var(--mu);font-size:.8rem;margin-top:10px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.78rem;color:var(--mu);margin-top:10px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px}
+select{flex:1;min-width:200px;padding:8px 10px;border:1px solid var(--bd);border-radius:10px;background:var(--bg);color:var(--tx);font:inherit}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<main>
+<h1 id="title">☀️ Weather in Tanauan, Batangas</h1>
+<p class="sub" id="stamp">Loading data…</p>
+
+<section class="card">
+  <div class="row">
+    <label for="brgy"><b>📍 Barangay</b></label>
+    <select id="brgy" aria-label="Choose a barangay"></select>
+  </div>
+  <p class="note">The forecast covers all of Tanauan City (48 barangays), so the data is the same for every barangay. Only the name you pick changes.</p>
+</section>
+
+<section class="card">
+  <div class="hero">
+    <div>
+      <div class="big" id="now">--</div>
+      <div id="cond" class="sub"></div>
+    </div>
+    <div style="text-align:right">
+      <div class="sub" style="margin:0">Heat index (feels like)</div>
+      <div style="font-size:2rem;font-weight:700" id="hiNow">--</div>
+      <span class="badge" id="hiBadge"></span>
+    </div>
+  </div>
+  <div class="grid">
+    <div class="stat"><b id="sRH">--</b><span>Humidity</span></div>
+    <div class="stat"><b id="sHigh">--</b><span>Today’s high</span></div>
+    <div class="stat"><b id="sLow">--</b><span>Today’s low</span></div>
+    <div class="stat"><b id="sRain">--</b><span>Chance of rain</span></div>
+  </div>
+</section>
+
+<section class="card" id="rhCard" hidden>
+  <h2>💧 Humidity (manual)</h2>
+  <div class="row">
+    <input type="range" id="rh" min="30" max="100" value="70" aria-label="Humidity">
+    <b id="rhv">70%</b>
+  </div>
+  <p class="note">Couldn’t get live data, so a snapshot is used and you set the humidity. The heat index follows this value.</p>
+</section>
+
+<section class="card">
+  <h2>🕒 Next 24 hours</h2>
+  <div class="scroll"><div class="hours" id="hours"></div></div>
+  <p class="note">Bar height and the number above it = heat index (°C). The number below the bar = air temperature. Points are 3 hours apart.</p>
+</section>
+
+<section class="card">
+  <h2>📅 Next days</h2>
+  <div class="scroll">
+  <table>
+    <thead><tr><th>Day</th><th>Low</th><th>High</th><th>Humidity</th><th>Max heat index</th><th>Rain</th></tr></thead>
+    <tbody id="days"></tbody>
+  </table></div>
+  <div class="legend" id="legend"></div>
+  <p class="note">Heat index levels follow PAGASA’s categories. Max heat index is the highest value that day.</p>
+</section>
+</main>
+
+<script>
+var LAT=14.0856, LON=121.1494;
+var KEY="7b0e12915e2106bd0765177527893ca6"; // OpenWeatherMap API key
+var Q="lat="+LAT+"&lon="+LON+"&units=metric&appid="+KEY;
+var URL_NOW="https://api.openweathermap.org/data/2.5/weather?"+Q;
+var URL_FC="https://api.openweathermap.org/data/2.5/forecast?"+Q;
+
+// Fallback snapshot (20 Oct 2026, in °F): [date, high, low, rain%]
+var SNAP={nowF:90.5,cond:"Mostly sunny",days:[
+["2026-10-20",91.0,75.9,35],["2026-10-21",91.0,77.7,15],["2026-10-22",90.3,78.0,20],["2026-10-23",89.2,75.1,15],
+["2026-10-24",89.2,73.3,10],["2026-10-25",89.9,74.2,15],["2026-10-26",89.8,75.5,15],["2026-10-27",88.0,76.0,45]]};
+
+var LV=[[27,"Caution","var(--c1)"],[33,"Extreme caution","var(--c2)"],[42,"Danger","var(--c3)"],[52,"Extreme danger","var(--c4)"]];
+function F(c){return c*9/5+32}
+function C(f){return (f-32)*5/9}
+function f1(x){return Math.round(x*10)/10}
+// Heat index (Rothfusz), input and output in °C
+function hi(tc,rh){
+  var t=F(tc),s=0.5*(t+61+(t-68)*1.2+rh*0.094);
+  if((s+t)/2<80) return C(Math.max(t,s));
+  var h=-42.379+2.04901523*t+10.14333127*rh-0.22475541*t*rh-0.00683783*t*t-0.05481717*rh*rh+0.00122874*t*t*rh+0.00085282*t*rh*rh-0.00000199*t*t*rh*rh;
+  if(rh<13&&t>=80&&t<=112)h-=((13-rh)/4)*Math.sqrt((17-Math.abs(t-95))/17);
+  if(rh>85&&t>=80&&t<=87)h+=((rh-85)/10)*((87-t)/5);
+  return C(h);
+}
+function lv(c){
+  if(c<27)return ["Comfortable","#667085"];
+  var r=LV[0];for(var i=0;i<LV.length;i++)if(c>=LV[i][0])r=LV[i];
+  return [r[1],r[2]];
+}
+function col(c){return c<27?"var(--mu)":lv(c)[1]}
+function dayLabel(d,i){
+  if(i===0)return "Today";
+  return new Date(d+"T00:00:00").toLocaleDateString("en-PH",{weekday:"short",month:"short",day:"numeric"});
+}
+function hrLabel(h){return (h%12||12)+(h<12?"a":"p")}
+
+var M=null; // normalized model
+
+function fromLive(n,f){
+  var tz=(f.city&&f.city.timezone)||28800;
+  function ymd(dt){return new Date((dt+tz)*1000).toISOString().slice(0,10)}
+  function hr(dt){return new Date((dt+tz)*1000).getUTCHours()}
+  var hours=f.list.slice(0,8).map(function(x){return {h:hr(x.dt),t:x.main.temp,rh:x.main.humidity}});
+  var g={},order=[];
+  f.list.forEach(function(x){var d=ymd(x.dt);if(!g[d]){g[d]=[];order.push(d)}g[d].push(x)});
+  var days=order.map(function(d){
+    var L=g[d];
+    return {d:d,
+      hi:Math.max.apply(null,L.map(function(x){return x.main.temp_max})),
+      lo:Math.min.apply(null,L.map(function(x){return x.main.temp_min})),
+      rain:Math.round(100*Math.max.apply(null,L.map(function(x){return x.pop||0}))),
+      rh:Math.round(L.reduce(function(a,x){return a+x.main.humidity},0)/L.length),
+      maxHI:Math.max.apply(null,L.map(function(x){return hi(x.main.temp,x.main.humidity)}))};
+  });
+  days[0].hi=Math.max(days[0].hi,n.main.temp);
+  days[0].lo=Math.min(days[0].lo,n.main.temp);
+  var c=(n.weather&&n.weather[0]&&n.weather[0].description)||"";
+  c=c.charAt(0).toUpperCase()+c.slice(1);
+  return {live:true,nowT:n.main.temp,nowRH:n.main.humidity,cond:c,hours:hours,days:days};
+}
+function fromSnap(rh){
+  var d0=SNAP.days,now=new Date(),h0=now.getHours(),hours=[];
+  function tAt(day,hr){var d=d0[Math.min(day,d0.length-1)],m=(d[1]+d[2])/2,a=(d[1]-d[2])/2;return C(m+a*Math.cos(2*Math.PI*(hr-14)/24))}
+  for(var i=0;i<24;i++){var hr=(h0+i)%24;hours.push({h:hr,t:tAt(h0+i>=24?1:0,hr),rh:rh})}
+  var days=d0.map(function(d){return {d:d[0],hi:C(d[1]),lo:C(d[2]),rain:d[3],rh:rh,maxHI:hi(C(d[1]),rh)}});
+  return {live:false,nowT:C(SNAP.nowF),nowRH:rh,cond:SNAP.cond,hours:hours,days:days};
+}
+
+function render(){
+  var d=M.days[0],h=hi(M.nowT,M.nowRH),L=lv(h);
+  document.getElementById("now").textContent=f1(M.nowT)+"°C";
+  document.getElementById("cond").textContent=M.cond;
+  document.getElementById("hiNow").textContent=f1(h)+"°C";
+  var b=document.getElementById("hiBadge");b.textContent=L[0];b.style.background=L[1];
+  document.getElementById("sRH").textContent=Math.round(M.nowRH)+"%";
+  document.getElementById("sHigh").textContent=f1(d.hi)+"°C";
+  document.getElementById("sLow").textContent=f1(d.lo)+"°C";
+  document.getElementById("sRain").textContent=d.rain+"%";
+  document.getElementById("hours").innerHTML=M.hours.map(function(x){
+    var v=hi(x.t,x.rh),ht=Math.max(14,(v-20)*8);
+    return '<div class="h"><b>'+Math.round(v)+'°</b><div class="bar" style="height:'+ht+'px;background:'+col(v)+'"></div><span>'+Math.round(x.t)+'°C</span><span>'+hrLabel(x.h)+'</span></div>';
+  }).join("");
+  document.getElementById("days").innerHTML=M.days.map(function(x,i){
+    var l=lv(x.maxHI);
+    return '<tr><td>'+dayLabel(x.d,i)+'</td><td>'+f1(x.lo)+'°C</td><td>'+f1(x.hi)+'°C</td><td>'+x.rh+'%</td><td><b style="color:'+col(x.maxHI)+'">'+f1(x.maxHI)+'°C</b> <span class="note">'+l[0]+'</span></td><td>'+x.rain+'%</td></tr>';
+  }).join("");
+}
+
+document.getElementById("legend").innerHTML=LV.map(function(l,i){
+  var n=LV[i+1]?l[0]+"–"+(LV[i+1][0]-1):"52+";return '<span><i style="background:'+l[2]+'"></i>'+n+'°C '+l[1]+'</span>';
+}).join("");
+
+var BRGY=["Altura Bata","Altura Matanda","Altura-South","Ambulong","Bagbag","Bagumbayan","Balele","Banadero","Banjo East","Banjo Laurel","Bilog-bilog","Boot","Cale","Darasa","Gonzales","Hidalgo","Janopol","Janopol Oriental","Laurel","Luyos","Mabini","Malaking Pulo","Maria Paz","Maugat","Montaña","Natatas","Pagaspas","Pantay Bata","Pantay Matanda","Poblacion Barangay 1","Poblacion Barangay 2","Poblacion Barangay 3","Poblacion Barangay 4","Poblacion Barangay 5","Poblacion Barangay 6","Poblacion Barangay 7","Sala","Sambat","San Jose","Santol","Santor","Sulpoc","Suplang","Talaga","Tinurik","Trapiche","Ulango","Wawa"];
+var sel=document.getElementById("brgy");
+sel.innerHTML='<option value="">Whole Tanauan City</option>'+BRGY.map(function(b){return '<option>'+b+'</option>'}).join("");
+sel.addEventListener("change",function(){
+  document.getElementById("title").textContent="☀️ Weather in "+(sel.value?(/^Poblacion/.test(sel.value)?"":"Brgy. ")+sel.value+", ":"")+"Tanauan, Batangas";
+});
+
+function useSnapshot(){
+  var rhEl=document.getElementById("rh");
+  document.getElementById("rhCard").hidden=false;
+  document.getElementById("stamp").textContent="Offline snapshot (Oct 20, 2026) · Tanauan, Batangas";
+  function go(){document.getElementById("rhv").textContent=rhEl.value+"%";M=fromSnap(+rhEl.value);render()}
+  rhEl.addEventListener("input",go);go();
+}
+
+Promise.all([fetch(URL_NOW),fetch(URL_FC)]).then(function(rs){
+  if(!rs[0].ok||!rs[1].ok)throw 0;
+  return Promise.all([rs[0].json(),rs[1].json()]);
+}).then(function(r){
+  M=fromLive(r[0],r[1]);
+  document.getElementById("stamp").textContent="Live data from OpenWeatherMap · Tanauan, Batangas · "+new Date().toLocaleTimeString("en-PH",{hour:"numeric",minute:"2-digit"});
+  render();
+}).catch(useSnapshot);
+</script>
+</body>
+</html>
